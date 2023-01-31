@@ -25,16 +25,16 @@ def main():
     sock.bind(('', 55000))
     sock.listen(10)
     print('Server is running, please press ctrl+c to stop')
+    conn, addr = sock.accept()
+    print('connected:', addr)
     while True:
-        conn, addr = sock.accept()
-        print('connected:', addr)
-
-        msg = receive_message(conn)
+        msg = byte_string_decode(conn.recv(1024))
+        print(msg)
         if is_username(msg):
             connections_db[msg] = conn
             conn.send(bytes(f'Hello, {msg}\n', encoding='UTF-8'))
         else:
-            for _, c in connections_db:
+            for c in connections_db.values():
                 c.send(bytes(msg, encoding='UTF-8'))
 
 
